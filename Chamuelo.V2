@@ -1,0 +1,181 @@
+-- CHAMUELO.EXE | SOYCHAMUELO
+-- Interfaz visual negro y morado neón
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Evitar duplicados
+local oldGui = playerGui:FindFirstChild("CHAMUELO_EXE")
+if oldGui then
+    oldGui:Destroy()
+end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "CHAMUELO_EXE"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.DisplayOrder = 999
+gui.Parent = playerGui
+
+-- BOTÓN FLOTANTE
+local toggle = Instance.new("TextButton")
+toggle.Name = "CHAMUELO"
+toggle.Size = UDim2.fromOffset(130, 48)
+toggle.Position = UDim2.new(1, -145, 0.5, -24)
+toggle.BackgroundColor3 = Color3.fromRGB(15, 10, 25)
+toggle.Text = "CHAMUELO"
+toggle.TextColor3 = Color3.fromRGB(210, 140, 255)
+toggle.TextSize = 15
+toggle.Font = Enum.Font.GothamBlack
+toggle.ZIndex = 10
+toggle.Parent = gui
+
+Instance.new("UICorner", toggle).CornerRadius =
+    UDim.new(0, 12)
+
+local toggleStroke = Instance.new("UIStroke")
+toggleStroke.Color = Color3.fromRGB(175, 60, 255)
+toggleStroke.Thickness = 2
+toggleStroke.Parent = toggle
+
+-- MENÚ PRINCIPAL
+local frame = Instance.new("Frame")
+frame.Name = "MainMenu"
+frame.Size = UDim2.new(0.82, 0, 0.68, 0)
+frame.Position = UDim2.new(0.09, 0, 0.16, 0)
+frame.BackgroundColor3 = Color3.fromRGB(10, 8, 16)
+frame.Visible = false
+frame.ClipsDescendants = true
+frame.Parent = gui
+
+Instance.new("UICorner", frame).CornerRadius =
+    UDim.new(0, 16)
+
+local frameStroke = Instance.new("UIStroke")
+frameStroke.Color = Color3.fromRGB(175, 60, 255)
+frameStroke.Thickness = 2
+frameStroke.Parent = frame
+
+-- ADAPTACIÓN A PC Y MÓVIL
+local sizeConstraint = Instance.new("UISizeConstraint")
+sizeConstraint.MinSize = Vector2.new(280, 300)
+sizeConstraint.MaxSize = Vector2.new(600, 500)
+sizeConstraint.Parent = frame
+
+-- TÍTULO
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 42)
+title.Position = UDim2.fromOffset(10, 5)
+title.BackgroundTransparency = 1
+title.Text = "CHAMUELO.EXE"
+title.TextColor3 = Color3.fromRGB(205, 125, 255)
+title.TextSize = 23
+title.Font = Enum.Font.GothamBlack
+title.Parent = frame
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(1, -20, 0, 25)
+subtitle.Position = UDim2.fromOffset(10, 43)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "SOYCHAMUELO  |  HACKER PRO"
+subtitle.TextColor3 = Color3.fromRGB(220, 210, 235)
+subtitle.TextSize = 12
+subtitle.Font = Enum.Font.Gotham
+subtitle.Parent = frame
+
+-- LISTA DE CATEGORÍAS
+local list = Instance.new("ScrollingFrame")
+list.Name = "Categories"
+list.Size = UDim2.new(1, -24, 1, -85)
+list.Position = UDim2.fromOffset(12, 76)
+list.BackgroundTransparency = 1
+list.BorderSizePixel = 0
+list.ScrollBarThickness = 4
+list.ScrollBarImageColor3 = Color3.fromRGB(175, 60, 255)
+list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+list.CanvasSize = UDim2.new(0, 0, 0, 0)
+list.Parent = frame
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 8)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = list
+
+local categories = {
+    "FUNCIONES",
+    "MOVIMIENTO",
+    "RECOMPENSAS GRATIS",
+    "PASES DEL JUEGO",
+    "ADMINISTRACIÓN",
+    "CONFIGURACIÓN"
+}
+
+for i, category in ipairs(categories) do
+    local button = Instance.new("TextButton")
+    button.Name = "Category" .. i
+    button.Size = UDim2.new(1, -8, 0, 42)
+    button.BackgroundColor3 = Color3.fromRGB(35, 20, 48)
+    button.Text = "  " .. category
+    button.TextColor3 = Color3.fromRGB(235, 220, 255)
+    button.TextSize = 14
+    button.Font = Enum.Font.GothamBold
+    button.TextXAlignment = Enum.TextXAlignment.Left
+    button.LayoutOrder = i
+    button.Parent = list
+
+    Instance.new("UICorner", button).CornerRadius =
+        UDim.new(0, 9)
+
+    local border = Instance.new("UIStroke")
+    border.Color = Color3.fromRGB(100, 40, 145)
+    border.Thickness = 1
+    border.Parent = button
+
+    button.Activated:Connect(function()
+        subtitle.Text = "SECCIÓN: " .. category
+    end)
+end
+
+-- ANIMACIÓN Y VISIBILIDAD
+local opened = false
+local openPosition = UDim2.new(0.09, 0, 0.16, 0)
+local closedPosition = UDim2.new(0.09, 0, 1.1, 0)
+
+frame.Position = closedPosition
+
+toggle.Activated:Connect(function()
+    opened = not opened
+
+    if opened then
+        frame.Visible = true
+        frame.Position = closedPosition
+
+        TweenService:Create(
+            frame,
+            TweenInfo.new(
+                0.3,
+                Enum.EasingStyle.Quint,
+                Enum.EasingDirection.Out
+            ),
+            {Position = openPosition}
+        ):Play()
+    else
+        local tween = TweenService:Create(
+            frame,
+            TweenInfo.new(0.25),
+            {Position = closedPosition}
+        )
+
+        tween:Play()
+        tween.Completed:Once(function()
+            if not opened then
+                frame.Visible = false
+            end
+        end)
+    end
+end)
+
+print("CHAMUELO.EXE: interfaz cargada")
